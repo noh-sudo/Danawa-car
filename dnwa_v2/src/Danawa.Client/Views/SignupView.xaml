@@ -1,0 +1,60 @@
+<UserControl x:Class="Danawa.Client.Views.SignupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="480" d:DesignWidth="360">
+    <!-- 일반회원 계정만 생성된다. 권한은 서버가 USER로 고정한다 (R5) -->
+    <Border Style="{StaticResource Card}" Width="440" Padding="36,32" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel>
+            <TextBlock Text="회원가입" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,24"/>
+
+            <TextBlock Text="아이디 (4~30자 영문·숫자)" Style="{StaticResource FieldLabel}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Text="{Binding LoginId, UpdateSourceTrigger=PropertyChanged}"
+                         AutomationProperties.Name="아이디"/>
+                <Button Grid.Column="1" Content="중복확인" Command="{Binding CheckIdCommand}"
+                        Style="{StaticResource SecondaryButton}" Width="104" Margin="10,0,0,0"/>
+            </Grid>
+            <!-- 사용 가능=초록, 그 외=빨강 -->
+            <TextBlock Text="{Binding IdCheckMessage}" FontSize="12" Margin="0,4,0,0"
+                       Visibility="{Binding IdCheckMessage, Converter={StaticResource StringToVisibility}}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsIdAvailable}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource SuccessBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <TextBlock Text="비밀번호 (8자 이상)" Style="{StaticResource FieldLabel}" Margin="0,14,0,4"/>
+            <PasswordBox x:Name="PasswordBox" AutomationProperties.Name="비밀번호"
+                         PasswordChanged="PasswordBox_PasswordChanged"/>
+
+            <TextBlock Text="비밀번호 확인" Style="{StaticResource FieldLabel}" Margin="0,14,0,4"/>
+            <PasswordBox x:Name="PasswordConfirmBox" AutomationProperties.Name="비밀번호 확인"
+                         PasswordChanged="PasswordConfirmBox_PasswordChanged"/>
+
+            <!-- 길이·허용문자·일치 여부는 클라이언트와 서버 양쪽에서 검사한다 (USR-08) -->
+            <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" Margin="0,6,0,0"
+                       Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibility}}"/>
+
+            <Button Content="가입하기" Command="{Binding SignupCommand}"
+                    Style="{StaticResource PrimaryButton}" MinHeight="46" FontSize="15" Margin="0,16,0,0"/>
+
+            <TextBlock HorizontalAlignment="Center" Margin="0,16,0,0" FontSize="12" Foreground="{StaticResource MutedBrush}">
+                <Run Text="이미 계정이 있으신가요?"/>
+                <Hyperlink Command="{Binding GoToLoginCommand}" Foreground="{StaticResource MutedBrush}">로그인 ›</Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Border>
+</UserControl>

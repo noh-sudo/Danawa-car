@@ -1,0 +1,21 @@
+# 빌드 산출물
+[Bb]in/
+[Oo]bj/
+.vs/
+
+# 민감정보(DB 접속 문자열 등) 포함 — appsettings.json은 커밋하지 않는다
+appsettings.json
+
+# Visual Studio 사용자·캐시 파일
+*.user
+*.suo
+*.cache
+
+# 에디터/도구 설정
+.vscode/
+.idea/
+.claude/
+
+# OS
+Thumbs.db
+.DS_Store

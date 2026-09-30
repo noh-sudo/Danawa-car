@@ -1,0 +1,46 @@
+<UserControl x:Class="Danawa.Client.Views.ServerDownView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="800">
+    <!-- 서버 점검 화면 (COM-01, COM-08): 실행 시 접속 실패 또는 사용 중 연결 끊김 -->
+    <Border Style="{StaticResource Card}" Width="500" Padding="40,36" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel>
+            <Border Width="64" Height="64" CornerRadius="32" Background="#FDECEA" HorizontalAlignment="Center">
+                <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                           Foreground="{StaticResource DangerBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <TextBlock Text="서버 점검 중입니다" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,18,0,10"/>
+            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Foreground="#555B63" LineHeight="21">
+                서버와 연결할 수 없습니다. 잠시 후 [재접속]을 눌러 주세요.<LineBreak/>
+                다시 연결되면 로그아웃된 상태로 메인 화면에서 시작합니다.
+            </TextBlock>
+            <TextBlock Text="{Binding LastAttemptText}" Style="{StaticResource MutedText}"
+                       HorizontalAlignment="Center" Margin="0,12,0,0"/>
+
+            <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource ErrorText}" TextAlignment="Center" Margin="0,14,0,0"
+                       Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibility}}"/>
+
+            <!-- 요청 중에는 비활성 + "연결 중…" -->
+            <Button Command="{Binding ReconnectCommand}" Style="{StaticResource PrimaryButton}"
+                    MinHeight="46" FontSize="15" Margin="0,22,0,0" AutomationProperties.Name="재접속">
+                <TextBlock>
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="재접속"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                    <Setter Property="Text" Value="연결 중…"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Button>
+        </StackPanel>
+    </Border>
+</UserControl>

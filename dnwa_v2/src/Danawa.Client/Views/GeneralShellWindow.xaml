@@ -1,0 +1,195 @@
+<Window x:Class="Danawa.Client.Views.GeneralShellWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Danawa.Client.ViewModels"
+        xmlns:views="clr-namespace:Danawa.Client.Views"
+        mc:Ignorable="d"
+        Title="다나와 자동차" Height="800" Width="1280"
+        FontFamily="Malgun Gothic" Background="{StaticResource PageBackground}">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:MainViewModel}">
+            <views:MainView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LoginViewModel}">
+            <views:LoginView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SignupViewModel}">
+            <views:SignupView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CarListViewModel}">
+            <views:CarListView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CarDetailViewModel}">
+            <views:CarDetailView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:FavoriteListViewModel}">
+            <views:FavoriteListView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:QuoteListViewModel}">
+            <views:QuoteListView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ServerDownViewModel}">
+            <views:ServerDownView/>
+        </DataTemplate>
+
+        <!-- 헤더 우측 아이콘 버튼 (견적함 / 관심모델 / 로그인·계정). 아이콘은 Segoe MDL2 Assets 글리프 -->
+        <Style x:Key="HeaderIconButton" TargetType="Button" BasedOn="{StaticResource PlainButton}">
+            <Setter Property="Width" Value="84"/>
+            <Setter Property="Foreground" Value="#444A52"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 공통 헤더 + GNB: 모든 화면 고정 -->
+        <Border Grid.Row="0" Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+            <StackPanel>
+                <Grid Margin="28,16,20,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="460"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ① 로고 → 메인 -->
+                    <Button Grid.Column="0" Style="{StaticResource PlainButton}" HorizontalAlignment="Left"
+                            Command="{Binding NavigateHomeCommand}" ToolTip="메인으로">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="{StaticResource PrimaryBrush}" CornerRadius="4" Width="30" Height="30">
+                                <TextBlock Text="D" Foreground="White" FontWeight="Bold" FontSize="16"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="다나와 자동차" FontSize="18" FontWeight="Bold" Margin="10,0,0,0"
+                                       VerticalAlignment="Center" Foreground="{StaticResource TextBrush}"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- ② 검색바 -->
+                    <Border Grid.Column="1" Height="38" CornerRadius="19" BorderBrush="#C9CFD6" BorderThickness="1"
+                            Background="White" VerticalAlignment="Center">
+                        <Grid Margin="16,0,8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" BorderThickness="0" Padding="0" Background="Transparent"
+                                     Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Return" Command="{Binding SearchCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <TextBlock Grid.Column="0" Text="차량명 또는 브랜드명 검색" IsHitTestVisible="False"
+                                       VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SearchKeyword}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <Button Grid.Column="1" Style="{StaticResource PlainButton}" Padding="6,0"
+                                    Command="{Binding ClearSearchCommand}" ToolTip="검색어 지우기"
+                                    Visibility="{Binding SearchKeyword, Converter={StaticResource StringToVisibility}}">
+                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                           Foreground="{StaticResource MutedBrush}"/>
+                            </Button>
+                            <Button Grid.Column="1" Style="{StaticResource PlainButton}" Padding="6,0"
+                                    Command="{Binding SearchCommand}" ToolTip="검색"
+                                    Visibility="{Binding SearchKeyword, Converter={StaticResource StringToVisibility}, ConverterParameter=invert}">
+                                <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                           Foreground="{StaticResource MutedBrush}"/>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- ③ 견적함 / 관심모델 / 로그인·계정 + 서버 연결 상태 -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button Style="{StaticResource HeaderIconButton}" Command="{Binding NavigateToQuotesCommand}">
+                            <StackPanel>
+                                <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" FontSize="20" HorizontalAlignment="Center"/>
+                                <TextBlock Text="견적함" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource HeaderIconButton}" Command="{Binding NavigateToFavoritesCommand}">
+                            <StackPanel>
+                                <TextBlock Text="&#xEB51;" FontFamily="Segoe MDL2 Assets" FontSize="20" HorizontalAlignment="Center"/>
+                                <TextBlock Text="관심모델" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource HeaderIconButton}" Command="{Binding NavigateToLoginCommand}"
+                                Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToCollapsed}}">
+                            <StackPanel>
+                                <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="20" HorizontalAlignment="Center"/>
+                                <TextBlock Text="로그인" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Button>
+                        <StackPanel Width="84" Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisible}}">
+                            <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="20" HorizontalAlignment="Center"
+                                       Foreground="{StaticResource PrimaryBrush}"/>
+                            <TextBlock Text="{Binding LoginId}" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+
+                        <!-- 연결 상태 + (로그인 시) 로그아웃. 로그인 여부로 헤더 높이가 바뀌지 않게 이 칸에 둔다 -->
+                        <StackPanel VerticalAlignment="Top" Margin="16,0,0,0">
+                        <StackPanel Orientation="Horizontal" ToolTip="{Binding ConnectionMessage}">
+                            <Ellipse Width="8" Height="8" VerticalAlignment="Center">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{StaticResource DangerBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                <Setter Property="Fill" Value="{StaticResource SuccessBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock FontSize="12" Foreground="{StaticResource MutedBrush}" Margin="6,0,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Text" Value="서버 연결 끊김"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                <Setter Property="Text" Value="서버 연결됨"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock HorizontalAlignment="Right" FontSize="12" Margin="0,14,0,0"
+                                   Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisible}}">
+                            <Hyperlink Command="{Binding LogoutCommand}" Foreground="{StaticResource MutedBrush}">로그아웃</Hyperlink>
+                        </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ④ GNB: 전체 / 국산 / 수입 -->
+                <StackPanel Orientation="Horizontal" Margin="62,6,0,0">
+                    <Button Style="{StaticResource TabButton}" Content="전체차량" Tag="{Binding IsAllTab}"
+                            Command="{Binding ShowAllCarsCommand}"/>
+                    <Button Style="{StaticResource TabButton}" Content="국산차" Tag="{Binding IsDomesticTab}"
+                            Command="{Binding ShowDomesticCarsCommand}"/>
+                    <Button Style="{StaticResource TabButton}" Content="수입차" Tag="{Binding IsImportTab}"
+                            Command="{Binding ShowImportedCarsCommand}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- 콘텐츠 영역. 연결이 끊기면 ShellViewModel이 서버 점검 화면(ServerDownView)으로 바꾼다 -->
+        <ContentControl Grid.Row="1" Content="{Binding CurrentViewModel}" Focusable="False"/>
+    </Grid>
+</Window>
